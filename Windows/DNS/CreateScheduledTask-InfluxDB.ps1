@@ -4,15 +4,13 @@
 #
 # Scott Stevenson
 # Created: 23-10-2016
-# Modified: 28-10-2016
+# Modified: 12-11-2016
 #
 
 #
 # Global Variables
 #
-$TaskPath = "User Created Tasks\"
-$User = ''
-$password = ''
+. "$PSScriptRoot\TaskScheduler-Vars.ps1"
 
 
 #
@@ -20,7 +18,7 @@ $password = ''
 #
 $TaskName = "InfluxDB-Statistics-1m"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'C:\Scripts\InfluxDB-DataCollection-1m.ps1'
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).ToString('HH:mm')  `

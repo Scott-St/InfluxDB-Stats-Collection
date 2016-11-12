@@ -12,6 +12,7 @@
 #
 . "$PSScriptRoot\TaskScheduler-Vars.ps1"
 
+
 #
 # Creates a task that executes every 1 minute on the :00
 #
@@ -51,7 +52,7 @@ else
 
 $TaskName = "InfluxDB-Statistics-30s"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-30s.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).AddSeconds($secondsAdd).ToString('HH:mm:ss')  `
@@ -72,7 +73,7 @@ Register-ScheduledTask -Action $PS -Trigger $Time -TaskName $TaskName -User $Use
 #
 $TaskName = "InfluxDB-Statistics-30m"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-30m.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).ToString('HH:mm')  `

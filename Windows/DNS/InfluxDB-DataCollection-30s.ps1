@@ -1,15 +1,21 @@
 # Powershell to write to DB Script
 #
 # Scott Stevenson
-# Created: 23-10-2016
-# Modified: 29-10-2016
 #
+# Created: 23-10-2016
+# Modified: 12-11-2016
+#
+
+#
+# Include influxDB information
+#
+. "$PSScriptRoot\InfluxDB-Connection.ps1"
 
 $ComputerSystem = Get-WmiObject -class Win32_ComputerSystem | Select Name,NumberOfLogicalProcessors,TotalPhysicalMemory
 $Device = $ComputerSystem.name
 
-$uri = 'http://192.168.254.3:8086/write?db=statistics&precision=s'
-$authheader = "Basic " + ([Convert]::ToBase64String([System.Text.encoding]::ASCII.GetBytes("datauser:password")))
+$uri = "$server/write?db=$database&precision=s"
+$authheader = "Basic " + ([Convert]::ToBase64String([System.Text.encoding]::ASCII.GetBytes($username + ":" + $password)))
 	
 # Unix epoch date in seconds
 $CURDATE=[int][double](Get-Date(Get-Date).ToUniversalTime()-uformat "%s")
