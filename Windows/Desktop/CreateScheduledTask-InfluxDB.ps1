@@ -11,8 +11,9 @@
 # Global Variables
 #
 $TaskPath = "User Created Tasks\"
-$User = ''
-$password = ''
+$User = 'WindowsUser'
+$password = 'WindowsPassword'
+$ScriptsPath = "C:\Scripts"
 
 
 #
@@ -20,7 +21,7 @@ $password = ''
 #
 $TaskName = "InfluxDB-Statistics-1m"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'F:\Scott\Scripts\InfluxDB-DataCollection-1m.ps1'
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).ToString('HH:mm')  `
@@ -54,7 +55,7 @@ else
 
 $TaskName = "InfluxDB-Statistics-30s"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'F:\Scott\Scripts\InfluxDB-DataCollection-30s.ps1'
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).AddSeconds($secondsAdd).ToString('HH:mm:ss')  `
@@ -75,7 +76,7 @@ Register-ScheduledTask -Action $PS -Trigger $Time -TaskName $TaskName -User $Use
 #
 $TaskName = "InfluxDB-Statistics-30m"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'F:\Scott\Scripts\InfluxDB-DataCollection-30m.ps1'
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "$ScriptsPath\InfluxDB-DataCollection-1m.ps1"
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).ToString('HH:mm')  `
