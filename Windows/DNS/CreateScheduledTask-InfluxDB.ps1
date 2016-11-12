@@ -52,7 +52,7 @@ else
 
 $TaskName = "InfluxDB-Statistics-30s"
 $STSet = New-ScheduledTaskSettingsSet -Priority 4
-$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'C:\Scripts\InfluxDB-DataCollection-CPU-30s.ps1'
+$PS = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument 'C:\Scripts\InfluxDB-DataCollection-30s.ps1'
 $Time = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(+1).AddSeconds($secondsAdd).ToString('HH:mm:ss')  `
