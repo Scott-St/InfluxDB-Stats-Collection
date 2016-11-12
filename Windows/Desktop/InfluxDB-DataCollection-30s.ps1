@@ -8,14 +8,16 @@
 # Modified: 12-11-2016
 #
 
+#
 # Include influxDB information
-. .\InfluxDB-Connection.ps1
+#
+. "$PSScriptRoot\InfluxDB-Connection.ps1"
 
 $ComputerSystem = Get-WmiObject -class Win32_ComputerSystem | Select Name,NumberOfLogicalProcessors
 $Device = $ComputerSystem.name
 
 $uri = "$server/write?db=$database&precision=s"
-$authheader = "Basic " + ([Convert]::ToBase64String([System.Text.encoding]::ASCII.GetBytes($username + ":" + $password))))
+$authheader = "Basic " + ([Convert]::ToBase64String([System.Text.encoding]::ASCII.GetBytes($username + ":" + $password)))
 
 # Location of the AIDA64 registry information
 $key = 'HKCU:\Software\FinalWire\AIDA64\SensorValues'

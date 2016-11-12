@@ -10,11 +10,7 @@
 #
 # Global Variables
 #
-$TaskPath = "User Created Tasks\"
-$User = 'WindowsUser'
-$password = 'WindowsPassword'
-$ScriptsPath = "C:\Scripts"
-
+. "$PSScriptRoot\TaskScheduler-Vars.ps1"
 
 #
 # Creates a task that executes every 1 minute on the :00
