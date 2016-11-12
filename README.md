@@ -10,3 +10,16 @@ These are specific to my network but in case anyone wants to disect them, feel f
 - Windows Server DNS
 - Windows PCs
 - DD-WRT Router
+
+###Windows
+Edit **TaskScheduler-Vars.ps1** to set the variables for creating a scheduled task.
+
+Run **CreateScheduledTask-InfluxDB.ps1** with Powershell to automatically create scheduled tasks. Alternativly, create a scheduled task that will run on startup to create/re-create the scheduled taskes using the action:
+
+```
+Powershell.exe "C:\Path\To\CreateScheduledTask-InfluxDB.ps1"
+```
+
+This will create 3 scheduled tasks for the 30 minute, 1 minute (:00) and 1 minute (:30).
+
+Make sure to edit **InfluxDB-Connection.ps1** for the connection to InfluxDB.
