@@ -177,93 +177,150 @@ case ${1} in
 	
 	curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "connectionStats,Device=${DEVICE} IPConnections=${IPCONNECTIONS},WiFiG=${ath0CONNECTIONS},WiFiN=${ath1CONNECTIONS},Ping=${PING} ${CURDATE}000000000" >/dev/null 2>&1
 	
-	cat /proc/net/dev | awk '/ath0/ {print $2,$10}' | while read bytesout bytesin
-	do
-		# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
-		if [ ${bytesin} -le 0 ] ; then
-			bytesin=0
-		fi
+	if [[ -f /jffs/bin/ATH0byteCount.tmp ]] ; then
+		# Read the last values from the tmpfile - Line "OpenVPN"
+		grep "ATH0" /jffs/bin/ATH0byteCount.tmp | while read dev lastBytesIn lastBytesOut
+		do
+			cat /proc/net/dev | awk '/ath0/ {print $2,$10}' | while read currentBytesIn currentBytesOut
+			do
 			
-		if [ ${bytesout} -le 0 ] ; then
-			bytesout=0
-		fi
-		curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=ath0,Device=${DEVICE} bytesIn=${bytesin},bytesOut=${bytesout} ${CURDATE}000000000" >/dev/null 2>&1
-	done 
+				# Write out the current stats to the temp file for the next read
+				echo "ATH0" ${currentBytesIn} ${currentBytesOut} > /jffs/bin/ATH0byteCount.tmp
+							
+				totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
+				totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
+							
+				# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
+				if [ ${totalBytesIn} -le 0 ] ; then
+					totalBytesIn=0
+				fi
+							
+				if [ ${totalBytesOut} -le 0 ] ; then
+					totalBytesOut=0
+				fi
+
+				curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=ath0,Device=${DEVICE} bytesIn=${totalBytesIn},bytesOut=${totalBytesOut} ${CURDATE}000000000" >/dev/null 2>&1
+			done 
+		done
+	fi
 	
-	cat /proc/net/dev | awk '/ath1/ {print $2,$10}' | while read bytesout bytesin
-	do
-		# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
-		if [ ${bytesin} -le 0 ] ; then
-			bytesin=0
-		fi
+	if [[ -f /jffs/bin/ATH1byteCount.tmp ]] ; then
+		# Read the last values from the tmpfile - Line "OpenVPN"
+		grep "ATH1" /jffs/bin/ATH1byteCount.tmp | while read dev lastBytesIn lastBytesOut
+		do
+			cat /proc/net/dev | awk '/ath1/ {print $2,$10}' | while read currentBytesIn currentBytesOut
+			do
 			
-		if [ ${bytesout} -le 0 ] ; then
-			bytesout=0
-		fi
-		curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=ath1,Device=${DEVICE} bytesIn=${bytesin},bytesOut=${bytesout} ${CURDATE}000000000" >/dev/null 2>&1
-	done
-	cat /proc/net/dev | awk '/eth0/ {print $2,$10}' | while read bytesin bytesout
-	do
-		# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
-		if [ ${bytesin} -le 0 ] ; then
-			bytesin=0
-		fi
+				# Write out the current stats to the temp file for the next read
+				echo "ATH1" ${currentBytesIn} ${currentBytesOut} > /jffs/bin/ATH1byteCount.tmp
+							
+				totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
+				totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
+							
+				# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
+				if [ ${totalBytesIn} -le 0 ] ; then
+					totalBytesIn=0
+				fi
+							
+				if [ ${totalBytesOut} -le 0 ] ; then
+					totalBytesOut=0
+				fi
+
+				curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=ath1,Device=${DEVICE} bytesIn=${totalBytesIn},bytesOut=${totalBytesOut} ${CURDATE}000000000" >/dev/null 2>&1
+			done 
+		done
+	fi
+	
+	if [[ -f /jffs/bin/ETH0byteCount.tmp ]] ; then
+		# Read the last values from the tmpfile - Line "OpenVPN"
+		grep "ETH0" /jffs/bin/ETH0byteCount.tmp | while read dev lastBytesIn lastBytesOut
+		do
+			cat /proc/net/dev | awk '/eth0/ {print $2,$10}' | while read currentBytesIn currentBytesOut
+			do
 			
-		if [ ${bytesout} -le 0 ] ; then
-			bytesout=0
-		fi
-		curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=eth0,Device=${DEVICE} bytesIn=${bytesin},bytesOut=${bytesout} ${CURDATE}000000000" >/dev/null 2>&1
-	done
-	cat /proc/net/dev | awk '/eth1/ {print $2,$10}' | while read bytesin bytesout
-	do
-		# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
-		if [ ${bytesin} -le 0 ] ; then
-			bytesin=0
-		fi
+				# Write out the current stats to the temp file for the next read
+				echo "ETH0" ${currentBytesIn} ${currentBytesOut} > /jffs/bin/ETH0byteCount.tmp
+							
+				totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
+				totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
+							
+				# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
+				if [ ${totalBytesIn} -le 0 ] ; then
+					totalBytesIn=0
+				fi
+							
+				if [ ${totalBytesOut} -le 0 ] ; then
+					totalBytesOut=0
+				fi
+
+				curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=eth0,Device=${DEVICE} bytesIn=${totalBytesIn},bytesOut=${totalBytesOut} ${CURDATE}000000000" >/dev/null 2>&1
+			done 
+		done
+	fi
+	
+	if [[ -f /jffs/bin/ETH1byteCount.tmp ]] ; then
+		# Read the last values from the tmpfile - Line "OpenVPN"
+		grep "ETH1" /jffs/bin/ETH1byteCount.tmp | while read dev lastBytesIn lastBytesOut
+		do
+			cat /proc/net/dev | awk '/eth1/ {print $2,$10}' | while read currentBytesIn currentBytesOut
+			do
 			
-		if [ ${bytesout} -le 0 ] ; then
-			bytesout=0
-		fi
-		curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=eth1,Device=${DEVICE} bytesIn=${bytesin},bytesOut=${bytesout} ${CURDATE}000000000" >/dev/null 2>&1
-	done 
+				# Write out the current stats to the temp file for the next read
+				echo "ETH1" ${currentBytesIn} ${currentBytesOut} > /jffs/bin/ETH1byteCount.tmp
+							
+				totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
+				totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
+							
+				# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
+				if [ ${totalBytesIn} -le 0 ] ; then
+					totalBytesIn=0
+				fi
+							
+				if [ ${totalBytesOut} -le 0 ] ; then
+					totalBytesOut=0
+				fi
+
+				curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "interfaceStats,Interface=eth1,Device=${DEVICE} bytesIn=${totalBytesIn},bytesOut=${totalBytesOut} ${CURDATE}000000000" >/dev/null 2>&1
+			done 
+		done
+	fi
+
 
 	#
 	# OpenVPN bytes count and clients count.
 	#
 	if [[ -f /jffs/bin/byteCount.tmp ]] ; then
 
-	# Read the last values from the tmpfile - Line "OpenVPN"
-	grep "OpenVPN" /jffs/bin/byteCount.tmp | while read dev n lastBytesIn lastBytesOut
-	do
-		#echo  bytesin: ${lastBytesIn}
-		#echo  bytesout: ${lastBytesOut}
-	 
-		/bin/echo "load-stats" | /usr/bin/nc 127.0.0.1 14 | grep SUCCESS | awk -F "," '{split($1, a, "="); split($2, b, "="); split($3, c, "="); print a[2],b[2],c[2];}' | tr '\r' ' ' | while read nc currentBytesIn currentBytesOut 
+		# Read the last values from the tmpfile - Line "OpenVPN"
+		grep "OpenVPN" /jffs/bin/byteCount.tmp | while read dev n lastBytesIn lastBytesOut
 		do
-			# Write out the current stats to the temp file for the next read
-			echo "OpenVPN" ${nc} ${currentBytesIn} ${currentBytesOut} > /jffs/bin/byteCount.tmp
-			
-			totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
-			totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
-			
-			# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
-			if [ ${totalBytesIn} -le 0 ] ; then
-				totalBytesIn=0
-			fi
-			
-			if [ ${totalBytesOut} -le 0 ] ; then
-				totalBytesOut=0
-			fi
-			
-			curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "router_VPNTraffic inBytes=${totalBytesIn},outBytes=${totalBytesOut},clients=${nc} ${CURDATE}000000000" >/dev/null 2>&1
-	 
-		done
-	done 
+		 
+			/bin/echo "load-stats" | /usr/bin/nc 127.0.0.1 14 | grep SUCCESS | awk -F "," '{split($1, a, "="); split($2, b, "="); split($3, c, "="); print a[2],b[2],c[2];}' | tr '\r' ' ' | while read nc currentBytesIn currentBytesOut 
+			do
+				# Write out the current stats to the temp file for the next read
+				echo "OpenVPN" ${nc} ${currentBytesIn} ${currentBytesOut} > /jffs/bin/byteCount.tmp
+				
+				totalBytesIn=`expr ${currentBytesIn} - ${lastBytesIn}`
+				totalBytesOut=`expr ${currentBytesOut} - ${lastBytesOut}`
+				
+				# Prevent negative numbers when the counters reset.  Could miss data but it should be a marginal amount.
+				if [ ${totalBytesIn} -le 0 ] ; then
+					totalBytesIn=0
+				fi
+				
+				if [ ${totalBytesOut} -le 0 ] ; then
+					totalBytesOut=0
+				fi
+				
+				curl -is -XPOST "$DBURL/write?db=$DBNAME&u=$USER&p=$PASSWORD" --data-binary "router_VPNTraffic inBytes=${totalBytesIn},outBytes=${totalBytesOut},clients=${nc} ${CURDATE}000000000" >/dev/null 2>&1
+		 
+			done
+		done 
 
-else
-    # Write out blank file
-	echo "OpenVPN 0 0 0" > /jffs/bin/byteCount.tmp
-fi
+	else
+		# Write out blank file
+		echo "OpenVPN 0 0 0" > /jffs/bin/byteCount.tmp
+	fi
 
 
 	
