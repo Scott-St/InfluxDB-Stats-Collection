@@ -38,25 +38,28 @@ Foreach($Disk in $Disks) {
     # The other is sdd
     if ($Disk -like "*D:*") {
         $PowerOnHours = & 'C:\Program Files\smartmontools\bin\smartctl.exe' -n standby -A /dev/sde | Select-String -Pattern "Power_On_Hours"
-    } else {
-	    $PowerOnHours = & 'C:\Program Files\smartmontools\bin\smartctl.exe' -n standby -A $Disk.Name | Select-String -Pattern "Power_On_Hours"
-	}
-    
-	# Special Case for my SSD as it lists the mins/seconds also.
-	# leftpart is everything  before the h which roughly matches the others but not quite.
-
-	$pos = $PowerOnHours.line.IndexOf("h")
-	if ($pos -gt 0) {
-		$leftPart = $PowerOnHours.line.Substring(0, $pos)
-		$arrPowerOnHours = $leftPart -split '       '
-		$PowerOnHours = $arrPowerOnHours[2]
-	}
-	else {
-		$leftPart = $PowerOnHours
+        $pos = $PowerOnHours.line.IndexOf("h")
+        $leftPart = $PowerOnHours
 		$arrPowerOnHours = $leftPart -split '       '
 		$PowerOnHours = $arrPowerOnHours[3]
-	}
-	
+
+    # Special case for S: as its a SSD and reports the Power On Hours in a different format
+    } elseif ($Disk -like "*S:*") {
+	    $PowerOnHours = & 'C:\Program Files\smartmontools\bin\smartctl.exe' -n standby -A $Disk.Name | Select-String -Pattern "Power_On_Hours_and_Msec"
+	    $pos = $PowerOnHours.line.IndexOf("h")
+        $leftPart = $PowerOnHours.line.Substring(0, $pos)
+		$arrPowerOnHours = $leftPart -split '       '
+		$PowerOnHours = $arrPowerOnHours[2]
+
+    # Rest of the drives
+    } else {
+        $PowerOnHours = & 'C:\Program Files\smartmontools\bin\smartctl.exe' -n standby -A $Disk.Name | Select-String -Pattern "Power_On_Hours"
+        $pos = $PowerOnHours.line.IndexOf("h")
+        $leftPart = $PowerOnHours
+		$arrPowerOnHours = $leftPart -split '       '
+		$PowerOnHours = $arrPowerOnHours[3]
+    }
+    
 	$FreeMegabytes = $Disk.FreeMegabytes
 	$PercentFreeSpace = $Disk.PercentFreeSpace
 	$PercentUsedSpace = 100 - $Disk.PercentFreeSpace
